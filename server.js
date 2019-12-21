@@ -24,21 +24,23 @@ app.get("/api/hello", function(req, res) {
 });
 
 app.get("/api/timestamp/:date_string?", function(req, res) {
-  let response = { unix: null, utc: "Invalid Date" };
   const date_string = req.params.date_string;
-  try {
-    let date = null;
-    if (date_string) {
+  let date = null;
+  // console.log(date_string);
+  if (date_string) {
+    if (isNaN(+date_string)) {
       date = new Date(date_string);
     } else {
-      date = new Date();
+      date = new Date(+date_string);
     }
-    response.unix = date.getTime();
-    response.utc = date.toUTCString();
-  } catch (e) {
-    console.log(e);
+  } else {
+    date = new Date();
   }
-  res.json(response);
+  if (date.getTime()) {
+    res.json({ unix: date.getTime(), utc: date.toUTCString() });
+  } else {
+    res.json({ error: "Invalid Date" });
+  }
 });
 
 // listen for requests :)
